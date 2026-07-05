@@ -33,14 +33,104 @@ const STATUS = {
 };
 
 const ITEMS = [
-  { id: "breath",  name: "Crocodile breathing",   dose: "3–5 min · 4 in / 6 out", tiers: ["green", "amber", "red"] },
-  { id: "nods",    name: "Chin nods",             dose: "10 × 10s hold",          tiers: ["green", "amber"] },
-  { id: "scalene", name: "Scalene stretch",       dose: "3 × 30s per side",       amberDose: "3 × 20s per side", tiers: ["green", "amber"] },
-  { id: "pec",     name: "Pec minor doorway",     dose: "3 × 30s per side",       amberDose: "3 × 20s per side", tiers: ["green", "amber"] },
-  { id: "rib",     name: "First rib mobilisation", dose: "8–10 breaths per side", tiers: ["green", "amber"] },
-  { id: "glide",   name: "Ulnar nerve slider",    dose: "3–5 reps · micro, half range", tiers: ["green"] },
-  { id: "posture", name: "Posture snacks",        dose: "hourly · rolls, nods, short walk", tiers: ["green", "amber"] },
-  { id: "walk",    name: "Gentle walk",           dose: "10–20 min",              tiers: ["red"] },
+  {
+    id: "breath",
+    name: "Crocodile breathing",
+    dose: "3–5 min · 4 in / 6 out",
+    tiers: ["green", "amber", "red"],
+    how: [
+      "Lie face down, forehead resting on stacked hands (or a cushion if the arm position tingles).",
+      "Breathe in through the nose for 4s — belly and lower back rise, chest and neck stay quiet.",
+      "Out slow for 6s. Small, lazy breaths — the Breathe tab paces this for you.",
+    ],
+    caution: "Fizzy or lightheaded means you're over-breathing — make the breaths smaller, not bigger.",
+  },
+  {
+    id: "nods",
+    name: "Chin nods",
+    dose: "10 × 10s hold",
+    tiers: ["green", "amber"],
+    how: [
+      "Lie on your back, knees bent.",
+      "Gently nod as if saying a small \"yes\", lengthening the back of the neck.",
+      "Hold 10s, relax, repeat ×10.",
+    ],
+    caution: "No lifting the head, no gripping at the front of the throat — it should feel almost effortless.",
+  },
+  {
+    id: "scalene",
+    name: "Scalene stretch",
+    dose: "3 × 30s per side",
+    amberDose: "3 × 20s per side",
+    tiers: ["green", "amber"],
+    how: [
+      "Sit tall. Hook your fingers over the collarbone on the side you're stretching, to anchor it down.",
+      "Tilt the opposite ear toward the opposite shoulder until a gentle stretch in the side of the neck.",
+      "To bias the anterior scalene, add a slight upward gaze. Hold, breathe, swap sides.",
+    ],
+    caution: "Stretch feeling in the neck only — any arm tingling means back off the range.",
+  },
+  {
+    id: "pec",
+    name: "Pec minor doorway",
+    dose: "3 × 30s per side",
+    amberDose: "3 × 20s per side",
+    tiers: ["green", "amber"],
+    how: [
+      "Forearm on the doorframe with the elbow slightly below shoulder height — high angles compress the outlet.",
+      "Step gently through the doorway until a stretch across the front of the shoulder and chest.",
+      "Hold, breathe easy, swap sides.",
+    ],
+    caution: "Gentle stretch, not a hang. Arm symptoms = less step-through.",
+  },
+  {
+    id: "rib",
+    name: "First rib mobilisation",
+    dose: "8–10 breaths per side",
+    tiers: ["green", "amber"],
+    how: [
+      "Sling a towel over the top of the shoulder, close to the neck — one end in front, one behind.",
+      "Pull both ends down toward the opposite hip.",
+      "Exhale fully while tilting your head away; keep the downward pull on during the exhale, ease off on the inhale.",
+    ],
+    caution: "You're coaxing the rib down, not cranking it — gentle pressure is the dose.",
+  },
+  {
+    id: "glide",
+    name: "Ulnar nerve slider",
+    dose: "3–5 reps · micro, half range",
+    tiers: ["green"],
+    how: [
+      "Left arm out to the side about 45°, elbow bent, palm toward your face.",
+      "Straighten the elbow away from you while tilting your head toward the left shoulder.",
+      "Return the arm as the head comes back upright — one end loads while the other unloads.",
+    ],
+    caution: "Flossing, not stretching: slow, gentle, low reps. Tingling that lingers more than a few minutes afterwards = too much.",
+  },
+  {
+    id: "posture",
+    name: "Posture snacks",
+    dose: "hourly · rolls, nods, short walk",
+    tiers: ["green", "amber"],
+    how: [
+      "Every hour at the desk: 10 shoulder rolls back.",
+      "5 gentle chin nods.",
+      "2 minutes walking. Sustained slump is sustained compression — this resets it.",
+    ],
+    caution: "Frequency beats duration — lots of tiny breaks, not one big one.",
+  },
+  {
+    id: "walk",
+    name: "Gentle walk",
+    dose: "10–20 min",
+    tiers: ["red"],
+    how: [
+      "Easy pace, arms relaxed and swinging naturally.",
+      "Nose-breathe if you comfortably can.",
+      "This is circulation and calm, not exercise — keep it genuinely gentle.",
+    ],
+    caution: "On red days this plus breathing is the whole programme — resist adding more.",
+  },
 ];
 
 const PHASES = {
@@ -115,6 +205,7 @@ function TodayView({ data, update }) {
   const parked = data.status === "amber" ? ITEMS.filter((i) => i.tiers.length === 1 && i.tiers[0] === "green") : [];
   const [score, setScore] = useState(log.score == null ? 3 : log.score);
   const [note, setNote] = useState(log.note || "");
+  const [openId, setOpenId] = useState(null);
   const doneCount = items.filter((i) => log.done[i.id]).length;
 
   const setLog = (patch) =>
@@ -170,59 +261,103 @@ function TodayView({ data, update }) {
       <Card style={{ padding: 6 }}>
         {items.map((item, idx) => {
           const done = !!log.done[item.id];
+          const open = openId === item.id;
           const dose = data.status === "amber" && item.amberDose ? item.amberDose : item.dose;
           return (
-            <button
-              key={item.id}
-              onClick={() => toggle(item.id)}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                width: "100%",
-                textAlign: "left",
-                padding: "12px 10px",
-                background: "transparent",
-                border: "none",
-                borderTop: idx === 0 ? "none" : `1px solid ${C.border}`,
-                cursor: "pointer",
-              }}
-            >
-              <div
-                style={{
-                  width: 26,
-                  height: 26,
-                  borderRadius: 9,
-                  flexShrink: 0,
-                  border: `2px solid ${done ? C.pine : C.border}`,
-                  background: done ? C.pine : "transparent",
-                  color: "#fff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 15,
-                  transition: "background 0.15s",
-                }}
-              >
-                {done ? "✓" : ""}
-              </div>
-              <div style={{ minWidth: 0 }}>
-                <div
-                  className="body"
+            <div key={item.id} style={{ borderTop: idx === 0 ? "none" : `1px solid ${C.border}` }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 10px" }}>
+                <button
+                  onClick={() => toggle(item.id)}
+                  aria-label={done ? `Mark ${item.name} not done` : `Mark ${item.name} done`}
                   style={{
+                    width: 26,
+                    height: 26,
+                    borderRadius: 9,
+                    flexShrink: 0,
+                    padding: 0,
+                    border: `2px solid ${done ? C.pine : C.border}`,
+                    background: done ? C.pine : "transparent",
+                    color: "#fff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                     fontSize: 15,
-                    fontWeight: 600,
-                    color: done ? C.faint : C.ink,
-                    textDecoration: done ? "line-through" : "none",
+                    transition: "background 0.15s",
+                    cursor: "pointer",
                   }}
                 >
-                  {item.name}
-                </div>
-                <div className="body" style={{ fontSize: 12.5, color: C.faint }}>
-                  {dose}
-                </div>
+                  {done ? "✓" : ""}
+                </button>
+                <button
+                  onClick={() => setOpenId(open ? null : item.id)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    flex: 1,
+                    minWidth: 0,
+                    textAlign: "left",
+                    padding: 0,
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                >
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div
+                      className="body"
+                      style={{
+                        fontSize: 15,
+                        fontWeight: 600,
+                        color: done ? C.faint : C.ink,
+                        textDecoration: done ? "line-through" : "none",
+                      }}
+                    >
+                      {item.name}
+                    </div>
+                    <div className="body" style={{ fontSize: 12.5, color: C.faint }}>
+                      {dose}
+                    </div>
+                  </div>
+                  <div
+                    className="body"
+                    style={{
+                      color: C.faint,
+                      fontSize: 13,
+                      flexShrink: 0,
+                      transform: open ? "rotate(90deg)" : "none",
+                      transition: "transform 0.15s",
+                    }}
+                  >
+                    ›
+                  </div>
+                </button>
               </div>
-            </button>
+              {open && (
+                <div style={{ padding: "0 10px 14px 48px" }}>
+                  <ol className="body" style={{ margin: 0, paddingLeft: 18, fontSize: 13.5, color: C.sub, lineHeight: 1.55 }}>
+                    {item.how.map((step, i) => (
+                      <li key={i} style={{ marginBottom: 4 }}>{step}</li>
+                    ))}
+                  </ol>
+                  <div
+                    className="body"
+                    style={{
+                      marginTop: 8,
+                      padding: "8px 10px",
+                      borderRadius: 10,
+                      background: C.amberSoft,
+                      color: C.amber,
+                      fontSize: 12.5,
+                      fontWeight: 500,
+                      lineHeight: 1.45,
+                    }}
+                  >
+                    {item.caution}
+                  </div>
+                </div>
+              )}
+            </div>
           );
         })}
         {parked.map((item) => (

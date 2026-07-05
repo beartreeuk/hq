@@ -1,28 +1,11 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 import { store } from "../../lib/store.js";
+import { C, Card, SectionLabel } from "../../lib/ui.jsx";
 
 /* ------------------------------------------------------------------
    Physio module — nTOS conservative programme tracker
-   Palette: chalk porcelain / spruce ink / pine accent
 ------------------------------------------------------------------- */
-
-const C = {
-  bg: "#F2F4F3",
-  card: "#FFFFFF",
-  border: "#E1E7E4",
-  ink: "#17211E",
-  sub: "#5C6B66",
-  faint: "#8FA09A",
-  pine: "#2E6E5E",
-  pineSoft: "#E3EFEA",
-  green: "#2F7D4F",
-  greenSoft: "#E4F1E8",
-  amber: "#B4690E",
-  amberSoft: "#F6ECDC",
-  red: "#B3372F",
-  redSoft: "#F6E3E1",
-};
 
 const STORAGE_KEY = "physio.v1";
 
@@ -157,42 +140,6 @@ function loadData() {
   if (saved) return { data: { ...DEFAULT_DATA, ...saved }, persist: true };
   const ok = store.set(STORAGE_KEY, DEFAULT_DATA);
   return { data: { ...DEFAULT_DATA }, persist: ok };
-}
-
-/* ---------------- shared bits ---------------- */
-
-function Card({ children, style }) {
-  return (
-    <div
-      style={{
-        background: C.card,
-        border: `1px solid ${C.border}`,
-        borderRadius: 16,
-        padding: 16,
-        ...style,
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function SectionLabel({ children }) {
-  return (
-    <div
-      className="body"
-      style={{
-        fontSize: 11,
-        fontWeight: 600,
-        letterSpacing: "0.08em",
-        textTransform: "uppercase",
-        color: C.faint,
-        margin: "20px 4px 8px",
-      }}
-    >
-      {children}
-    </div>
-  );
 }
 
 /* ---------------- Today ---------------- */
@@ -975,8 +922,8 @@ export default function PhysioApp() {
   const dateStr = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg }}>
-      <div style={{ maxWidth: 430, margin: "0 auto", padding: "20px 16px 96px" }}>
+    <div style={{ background: C.bg }}>
+      <div style={{ maxWidth: 430, margin: "0 auto", padding: "8px 16px 96px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
           <div>
             <div className="disp" style={{ fontSize: 24, fontWeight: 700, color: C.ink, letterSpacing: "-0.02em" }}>

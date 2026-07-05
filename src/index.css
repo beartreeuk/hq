@@ -1,0 +1,28 @@
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #f2f4f3;
+}
+.disp {
+  font-family: "Bricolage Grotesque Variable", system-ui, sans-serif;
+}
+.body {
+  font-family: "Instrument Sans", system-ui, sans-serif;
+}
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+button {
+  font-family: inherit;
+}
+input[type="range"] {
+  accent-color: #2e6e5e;
+}
+@media (prefers-reduced-motion: reduce) {
+  .breath-ring {
+    transition: none !important;
+  }
+}

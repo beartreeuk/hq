@@ -18,6 +18,13 @@ body {
 button {
   font-family: inherit;
 }
+.pillbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.pillbar::-webkit-scrollbar {
+  display: none;
+}
 input[type="range"] {
   accent-color: #2e6e5e;
 }

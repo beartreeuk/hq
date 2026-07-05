@@ -9,13 +9,13 @@ import { C, Card, SectionLabel } from "../../lib/ui.jsx";
 
 const STORAGE_KEY = "physio.v1";
 
-const STATUS = {
-  green: { label: "Green", hint: "No neuro symptoms — full dose", color: C.green, soft: C.greenSoft },
-  amber: { label: "Amber", hint: "Tingles that cleared — glides parked, shorter holds", color: C.amber, soft: C.amberSoft },
-  red:   { label: "Red",   hint: "Numbness lasting hours or new weakness — breathing only", color: C.red, soft: C.redSoft },
+export const STATUS = {
+  green: { label: "Green", hint: "At your normal baseline — full dose", color: C.green, soft: C.greenSoft },
+  amber: { label: "Amber", hint: "Worse than baseline but settling — glides parked, shorter holds", color: C.amber, soft: C.amberSoft },
+  red:   { label: "Red",   hint: "New weakness, spreading, or worse for days — breathing only", color: C.red, soft: C.redSoft },
 };
 
-const ITEMS = [
+export const ITEMS = [
   {
     id: "breath",
     name: "Crocodile breathing",

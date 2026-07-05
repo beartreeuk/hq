@@ -17,9 +17,10 @@ export const C = {
   redSoft: "#F6E3E1",
 };
 
-export function Card({ children, style }) {
+export function Card({ children, style, onClick }) {
   return (
     <div
+      onClick={onClick}
       style={{
         background: C.card,
         border: `1px solid ${C.border}`,
